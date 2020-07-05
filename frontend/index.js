@@ -21,24 +21,17 @@ function HelloWorldBlock(shouldShowSettingsButton) {
     
 	const base = useBase();
 	const globalConfig = useGlobalConfig();
-    const tableId = globalConfig.get('selectedTableId');
-	
-	const table = base.getTableByIdIfExists(tableId);
+
 	
 	const [tableSize, settableSize] =  useState("4");
    
-   
+    const tableId = globalConfig.get(GlobalConfigKeys.TABLE_ID);
+	
+	const table = base.getTableByIdIfExists(tableId);
 	const records = useRecords(table);
-	const tasks = records.map(record => {
-		
-        return (
-            <div key={record.id}>
-                {record.name +', '+record.getCellValueAsString('Table')}
-            </div>
-        );
-    });
     
     var errorMessage = "";
+    
     
     return (
         <div>
@@ -46,7 +39,7 @@ function HelloWorldBlock(shouldShowSettingsButton) {
 					<FormField label="Table" >
 						<TablePickerSynced globalConfigKey={GlobalConfigKeys.TABLE_ID} />
 					</FormField>
-				{table && (
+				
 					<Box  >
 					<Label htmlFor="Tablesize">Table size</Label>
 				 	 <Input  id="Tablesize"  variant="primary"
@@ -56,27 +49,20 @@ function HelloWorldBlock(shouldShowSettingsButton) {
 						  
 						/>
 					</Box>
-				)}
-				{table && (
 					<Box paddingTop={2} >
 					   <Button onClick={() => { RunTableSet() }}
 						icon="edit" id="clicktable">
 						Process Guests
 					  </Button>
 					</Box>
-				)}
-				{table && (
-					<Box  paddingTop={2} >
-					<Label>{errorMessage}</Label>
-					</Box>
-				)}
 			</Box>
         </div>
     );
     
+	
     // process the table
 	function RunTableSet() {
-
+			
 		const toggle = (record) => {
 			table.updateRecordAsync(
 				record, {[completedFieldId]: !record.getCellValue(completedFieldId)}
@@ -103,7 +89,7 @@ function HelloWorldBlock(shouldShowSettingsButton) {
 				if (tableNo.substring(0,6)==="Table "){
 					tableNo=tableNo.substring(5,8);
 				} else {
-					
+					table.updateRecordAsync(record, {"Table": "Table "+tableNo } );
 				}
 				
 				TableFull[parseInt(tableNo)-1]++;
